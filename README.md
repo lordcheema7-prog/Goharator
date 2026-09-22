@@ -56,6 +56,7 @@ Gohrator/
 ├── index.html       # Single-Page Application with DOM screens, Canvas, HUD, & Modals
 ├── style.css        # Cyberpunk space theme, Glassmorphism, animations, & responsive styles
 ├── script.js        # Canvas game engine, procedural audio synthesizer, physics, state manager
+├── public/          # Vercel static deployment output (same game files)
 └── README.md        # Beginner-friendly documentation and guide
 ```
 

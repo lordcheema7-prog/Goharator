@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>GOHRATOR — Fly. Survive. Conquer the Sky.</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     STARFIELD BACKGROUND (lives behind every screen)
+     ============================================================ -->
+<div id="starfield"></div>
+<div id="nebula-glow"></div>
+
+<!-- ============================================================
+     SCREEN 1: SPLASH / LOADING SCREEN
+     ============================================================ -->
+<section id="screen-splash" class="screen active">
+  <div class="splash-wrap">
+    <div class="splash-rocket" id="splashRocket">
+      <div class="rocket-body-mini">
+        <span class="rocket-label-mini">GOHAR</span>
+      </div>
+      <div class="rocket-flame-mini"></div>
+    </div>
+    <h1 class="logo-title">GOHR<span class="logo-accent">A</span>TOR</h1>
+    <p class="logo-tagline">FLY. SURVIVE. CONQUER THE SKY.</p>
+
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill" id="loadingBarFill"></div>
+    </div>
+    <p class="loading-percent" id="loadingPercent">0%</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 2: LOGIN / ENTRY SCREEN
+     ============================================================ -->
+<section id="screen-login" class="screen">
+  <div class="login-card glass-panel">
+    <h1 class="login-title">GOHR<span class="logo-accent">A</span>TOR</h1>
+    <p class="login-sub">Identify yourself, pilot.</p>
+
+    <div class="input-group">
+      <label for="usernameInput">Pilot Name</label>
+      <input type="text" id="usernameInput" placeholder="Enter your pilot name" maxlength="16" autocomplete="off" />
+    </div>
+
+    <div class="input-group">
+      <label for="pilotIdInput">Pilot ID</label>
+      <input type="text" id="pilotIdInput" placeholder="4-digit ID — leave blank if new" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+      <p class="input-hint">Returning pilot? Enter your name + ID to load your saved progress. New pilot? Leave this blank — we'll assign you one.</p>
+    </div>
+
+    <p class="login-error" id="loginError" style="display:none;"></p>
+
+    <button class="btn btn-primary" id="loginBtn">ENTER GAME</button>
+    <button class="btn btn-ghost" id="guestBtn">CONTINUE AS GUEST</button>
+
+    <p class="privacy-note">🔒 Your data stays on this device unless a global server is enabled. Save your Pilot ID — it's the only way back into your account.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     MAIN APP SHELL (Header + Nav + Pages) — hidden until login
+     ============================================================ -->
+<div id="appShell" class="app-shell">
+
+  <!-- ---------- HEADER ---------- -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="header-logo">🚀 GOHR<span class="logo-accent">A</span>TOR</span>
+    </div>
+    <div class="header-stats">
+      <div class="stat-chip" title="Pilot Name">
+        <span class="stat-icon">👤</span><span id="headerPilotName">Pilot</span>
+      </div>
+      <div class="stat-chip" title="High Score">
+        <span class="stat-icon">🏆</span><span id="headerHighScore">0</span>
+      </div>
+      <div class="stat-chip" title="Energy Coins">
+        <span class="stat-icon">⚡</span><span id="headerCoins">0</span>
+      </div>
+      <div class="stat-chip" title="Current Level">
+        <span class="stat-icon">🔥</span><span id="headerLevel">1</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="soundToggleBtn" title="Toggle Sound">🔊</button>
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- ---------- PAGE: HOME ---------- -->
+  <main class="page active" id="page-home">
+    <div class="home-hero glass-panel">
+      <div class="hero-rocket-wrap">
+        <div class="rocket-body-hero" id="heroRocket">
+          <span class="rocket-label-hero">GOHAR</span>
+          <div class="rocket-window"></div>
+        </div>
+        <div class="rocket-flame-hero"></div>
+      </div>
+      <h2 class="hero-heading">Ready to fly, <span id="homePilotName">Pilot</span>?</h2>
+      <p class="hero-sub">Every second alive raises the stakes. Only skill keeps you in the sky.</p>
+      <button class="btn btn-primary btn-large" id="playFromHomeBtn">▶ PLAY NOW</button>
+    </div>
+
+    <div class="home-grid">
+      <div class="mini-card glass-panel">
+        <span class="mini-card-icon">🏆</span>
+        <span class="mini-card-value" id="homeHighScore">0</span>
+        <span class="mini-card-label">High Score</span>
+      </div>
+      <div class="mini-card glass-panel">
+        <span class="mini-card-icon">📏</span>
+        <span class="mini-card-value" id="homeTotalDistance">0</span>
+        <span class="mini-card-label">Total Distance</span>
+      </div>
+      <div class="mini-card glass-panel">
+        <span class="mini-card-icon">🚀</span>
+        <span class="mini-card-value" id="homeTotalFlights">0</span>
+        <span class="mini-card-label">Total Flights</span>
+      </div>
+      <div class="mini-card glass-panel">
+        <span class="mini-card-icon">🎯</span>
+        <span class="mini-card-value" id="homeAchievements">0/12</span>
+        <span class="mini-card-label">Achievements</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- PAGE: GAME ---------- -->
+  <main class="page" id="page-game">
+
+    <!-- HUD -->
+    <div class="game-hud">
+      <div class="hud-left">
+        <div class="hud-lives" id="hudLives">
+          <span class="life-icon">❤️</span><span class="life-icon">❤️</span><span class="life-icon">❤️</span>
+        </div>
+        <div class="hud-combo" id="hudCombo" style="display:none;">🔥 COMBO x<span id="hudComboValue">0</span></div>
+      </div>
+      <div class="hud-center">
+        <div class="hud-score" id="hudScore">0</div>
+        <div class="hud-multiplier">✖ <span id="hudMultiplier">1.0</span>x SCORE</div>
+      </div>
+      <div class="hud-right">
+        <div class="hud-chip">⚡ <span id="hudCoins">0</span></div>
+        <div class="hud-chip">📏 <span id="hudDistance">0</span>m</div>
+        <div class="hud-chip">🔥 Lv.<span id="hudLevel">1</span></div>
+      </div>
+    </div>
+
+    <!-- Active power-up indicators -->
+    <div class="active-powerups" id="activePowerups"></div>
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- Pre-game overlay -->
+      <div class="game-overlay" id="preGameOverlay">
+        <div class="overlay-content glass-panel">
+          <h2>READY, PILOT?</h2>
+          <p>Avoid obstacles. Collect energy coins. Survive as long as you can.</p>
+          <button class="btn btn-primary btn-large" id="startGameBtn">🚀 START FLIGHT</button>
+        </div>
+      </div>
+
+      <!-- Pause overlay -->
+      <div class="game-overlay hidden" id="pauseOverlay">
+        <div class="overlay-content glass-panel">
+          <h2>PAUSED</h2>
+          <button class="btn btn-primary" id="resumeBtn">RESUME</button>
+          <button class="btn btn-ghost" id="quitBtn">QUIT TO HOME</button>
+        </div>
+      </div>
+
+      <!-- Game over overlay -->
+      <div class="game-overlay hidden" id="gameOverOverlay">
+        <div class="overlay-content glass-panel">
+          <h2 class="gameover-title">GAME OVER</h2>
+          <p class="gameover-newrecord" id="newRecordBadge" style="display:none;">🏆 NEW HIGH SCORE!</p>
+          <div class="gameover-stats">
+            <div class="gameover-stat"><span class="go-label">Final Score</span><span class="go-value" id="goScore">0</span></div>
+            <div class="gameover-stat"><span class="go-label">Distance</span><span class="go-value" id="goDistance">0m</span></div>
+            <div class="gameover-stat"><span class="go-label">Coins Collected</span><span class="go-value" id="goCoins">0</span></div>
+            <div class="gameover-stat"><span class="go-label">Level Reached</span><span class="go-value" id="goLevel">1</span></div>
+          </div>
+          <button class="btn btn-primary btn-large" id="playAgainBtn">🔄 PLAY AGAIN</button>
+          <button class="btn btn-ghost" id="returnHomeBtn">🏠 RETURN HOME</button>
+        </div>
+      </div>
+
+      <button class="icon-btn pause-btn" id="pauseBtn" title="Pause">⏸</button>
+    </div>
+
+    <!-- Mobile touch controls -->
+    <div class="touch-controls" id="touchControls">
+      <button class="touch-btn touch-up" id="touchUp">⬆️</button>
+      <div class="touch-row">
+        <button class="touch-btn touch-left" id="touchLeft">⬅️</button>
+        <button class="touch-btn touch-down" id="touchDown">⬇️</button>
+        <button class="touch-btn touch-right" id="touchRight">➡️</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- PAGE: LEADERBOARD ---------- -->
+  <main class="page" id="page-leaderboard">
+    <h2 class="page-title">🏆 Leaderboard</h2>
+    <p class="page-sub" id="leaderboardSub">Top pilots on this device.</p>
+
+    <div class="lb-tabs">
+      <button class="lb-tab active" id="lbTabLocal" data-scope="local">📱 This Device</button>
+      <button class="lb-tab" id="lbTabGlobal" data-scope="global">🌍 Global</button>
+    </div>
+
+    <div class="leaderboard-list glass-panel" id="leaderboardList">
+      <!-- populated by JS -->
+    </div>
+  </main>
+
+  <!-- ---------- PAGE: ACHIEVEMENTS ---------- -->
+  <main class="page" id="page-achievements">
+    <h2 class="page-title">🎯 Achievements</h2>
+    <p class="page-sub" id="achievementsProgress">0 of 12 unlocked</p>
+    <div class="achievements-grid" id="achievementsGrid">
+      <!-- populated by JS -->
+    </div>
+  </main>
+
+  <!-- ---------- PAGE: PROFILE ---------- -->
+  <main class="page" id="page-profile">
+    <h2 class="page-title">👤 Profile</h2>
+    <div class="profile-card glass-panel">
+      <div class="profile-avatar">🧑‍🚀</div>
+      <h3 id="profilePilotName">Pilot</h3>
+      <div class="profile-id-chip" id="profilePilotIdChip">ID: <span id="profilePilotId">0000</span></div>
+      <div class="profile-stats-grid">
+        <div class="profile-stat"><span class="ps-label">🏆 High Score</span><span class="ps-value" id="profileHighScore">0</span></div>
+        <div class="profile-stat"><span class="ps-label">🚀 Total Flights</span><span class="ps-value" id="profileFlights">0</span></div>
+        <div class="profile-stat"><span class="ps-label">📏 Total Distance</span><span class="ps-value" id="profileDistance">0m</span></div>
+        <div class="profile-stat"><span class="ps-label">🪙 Total Coins</span><span class="ps-value" id="profileCoins">0</span></div>
+        <div class="profile-stat"><span class="ps-label">🔥 Highest Combo</span><span class="ps-value" id="profileCombo">0</span></div>
+        <div class="profile-stat"><span class="ps-label">⚡ Highest Level</span><span class="ps-value" id="profileLevel">1</span></div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn btn-secondary" id="changeNameBtn">✏️ CHANGE NAME</button>
+        <button class="btn btn-danger" id="resetDataBtn">🗑️ RESET GAME DATA</button>
+        <button class="btn btn-ghost" id="logoutBtn">🚪 LOG OUT</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- BOTTOM NAV (mobile) / handled responsively via CSS ---------- -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-btn active" data-page="home"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" data-page="game"><span class="nav-icon">🚀</span><span class="nav-label">Play</span></button>
+    <button class="nav-btn" data-page="leaderboard"><span class="nav-icon">🏆</span><span class="nav-label">Ranks</span></button>
+    <button class="nav-btn" data-page="achievements"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></button>
+    <button class="nav-btn" data-page="profile"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></button>
+  </nav>
+
+</div><!-- /appShell -->
+
+<!-- ============================================================
+     PILOT ID REVEAL MODAL — shown once, right after creating a new pilot
+     ============================================================ -->
+<div class="modal-backdrop hidden" id="pilotIdModal">
+  <div class="modal-box glass-panel pilot-id-box">
+    <div class="modal-header">
+      <h3>🎉 Welcome aboard, Pilot!</h3>
+    </div>
+    <div class="modal-body">
+      <p class="pilot-id-intro">Your unique Pilot ID has been assigned. Write it down or screenshot it — it's the <strong>only</strong> way to log back in and keep your progress.</p>
+      <div class="pilot-id-display" id="pilotIdDisplay">0000</div>
+      <p class="pilot-id-warn">⚠️ There's no password recovery. Lose this ID and you'll start over as a new pilot.</p>
+      <button class="btn btn-primary btn-large" id="pilotIdGotItBtn">GOT IT — LET'S FLY 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SETTINGS MODAL
+     ============================================================ -->
+<div class="modal-backdrop hidden" id="settingsModal">
+  <div class="modal-box glass-panel">
+    <div class="modal-header">
+      <h3>⚙️ Settings</h3>
+      <button class="icon-btn" id="closeSettingsBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="setting-row">
+        <span>🔊 Sound Effects</span>
+        <label class="switch"><input type="checkbox" id="settingSound" checked><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <span>🎵 Music</span>
+        <label class="switch"><input type="checkbox" id="settingMusic" checked><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <span>📳 Vibration</span>
+        <label class="switch"><input type="checkbox" id="settingVibration" checked><span class="slider"></span></label>
+      </div>
+      <div class="setting-row">
+        <span>🎮 Control Style</span>
+        <select id="settingControlStyle" class="select-input">
+          <option value="arrows">Arrows / WASD</option>
+          <option value="touch">Touch Buttons Only</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <span>🌟 Graphics Quality</span>
+        <select id="settingGraphics" class="select-input">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     RESET CONFIRMATION MODAL
+     ============================================================ -->
+<div class="modal-backdrop hidden" id="resetModal">
+  <div class="modal-box glass-panel">
+    <div class="modal-header">
+      <h3>⚠️ Are you sure?</h3>
+    </div>
+    <div class="modal-body">
+      <p class="reset-warning">This will permanently delete:</p>
+      <ul class="reset-list">
+        <li>All scores &amp; leaderboard entries</li>
+        <li>Energy coins</li>
+        <li>Achievements</li>
+        <li>Statistics</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelResetBtn">CANCEL</button>
+        <button class="btn btn-danger" id="confirmResetBtn">RESET</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CHANGE NAME MODAL
+     ============================================================ -->
+<div class="modal-backdrop hidden" id="changeNameModal">
+  <div class="modal-box glass-panel">
+    <div class="modal-header">
+      <h3>✏️ Change Pilot Name</h3>
+      <button class="icon-btn" id="closeChangeNameBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <input type="text" id="newNameInput" placeholder="New pilot name" maxlength="16" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelChangeNameBtn">CANCEL</button>
+        <button class="btn btn-primary" id="confirmChangeNameBtn">SAVE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST NOTIFICATION CONTAINER
+     ============================================================ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     ACHIEVEMENT UNLOCK POPUP
+     ============================================================ -->
+<div class="achievement-popup hidden" id="achievementPopup">
+  <span class="ap-icon" id="apIcon">🏆</span>
+  <div class="ap-text">
+    <span class="ap-title">ACHIEVEMENT UNLOCKED</span>
+    <span class="ap-name" id="apName">First Flight</span>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
