@@ -87,7 +87,7 @@ Gohrator/
 
 This project is ready to deploy as a static Vercel site. Import the GitHub repository in Vercel, keep the framework preset as **Other**, leave the build command empty, and set the output directory to `.`. Vercel will serve `index.html` directly.
 
-The game works immediately in offline-first mode: pilot profiles, scores, and settings are stored in the browser. The optional `backend-server.js` API uses local JSON files and should be deployed separately on a stateful Node host if you need a shared global leaderboard or cross-device accounts. Run it locally with `node backend-server.js`. Do not deploy it as a Vercel function expecting its JSON files to persist.
+The game works immediately in offline-first mode: pilot profiles, scores, and settings are stored in the browser. The optional `backend/server.js` API uses local JSON files and should be deployed separately on a stateful Node host if you need a shared global leaderboard or cross-device accounts. Run it locally with `node backend/server.js`. The backend is excluded from the static Vercel deployment because Vercel storage is not durable for these JSON files.
 
 After deploying a backend, set `API_BASE_URL` near the top of `script.js` to its HTTPS URL and configure its `ALLOWED_ORIGIN` environment variable to your Vercel domain.
 
