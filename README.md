@@ -56,7 +56,6 @@ Gohrator/
 ├── index.html       # Single-Page Application with DOM screens, Canvas, HUD, & Modals
 ├── style.css        # Cyberpunk space theme, Glassmorphism, animations, & responsive styles
 ├── script.js        # Canvas game engine, procedural audio synthesizer, physics, state manager
-├── public/          # Vercel static deployment output (same game files)
 └── README.md        # Beginner-friendly documentation and guide
 ```
 
@@ -86,7 +85,7 @@ Gohrator/
 
 ## ☁️ Publish on Vercel
 
-This project is ready to deploy as a static Vercel site. Import the GitHub repository in Vercel, keep the framework preset as **Other**, leave the build command empty, and set the output directory to `.`. Vercel will serve `index.html` directly.
+This project is ready to deploy as a static Vercel site. Import the GitHub repository in Vercel, select the **Other** framework preset, leave the build command empty, and set the output directory to `.`. The repository root contains `index.html`, `style.css`, and `script.js`, so Vercel serves the game without a build step.
 
 The game works immediately in offline-first mode: pilot profiles, scores, and settings are stored in the browser. The optional `backend/server.js` API uses local JSON files and should be deployed separately on a stateful Node host if you need a shared global leaderboard or cross-device accounts. Run it locally with `node backend/server.js`. The backend is excluded from the static Vercel deployment because Vercel storage is not durable for these JSON files.
 
